@@ -9,15 +9,75 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  image     String
-  createdAt DateTime @default(now())
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  nickname    String       @db.VarChar(255)
+  avatar      String       @db.VarChar(255)
+  role        Role
+  articles    Article[] // 一对多关系，用户可以有多篇文章
+  collections Collection[] // 一对多关系，用户可以有多个收藏夹
+  likes       Like[] // 一对多关系，用户可以点赞多篇文章
+}
+
+model Article {
+  id          Int                 @id @default(autoincrement())
+  title       String              @db.VarChar(255)
+  content     String
+  published   Boolean             @default(false)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  authorId    Int
+  author      User                @relation(fields: [authorId], references: [id])
+  cover       Cover?              @relation(fields: [coverId], references: [id])
+  coverId     Int?                @unique // Ensure coverId is unique for one-to-one relationship
+  collections CollectionArticle[] // 多对多关系，通过中间表实现
+  likes       Like[] // 一对多关系，文章可以被多用户点赞
+}
+
+model Cover {
+  id          Int      @id @default(autoincrement())
+  url         String   @db.VarChar(255)
+  width       Int
+  height      Int
+  aspectRatio Decimal
+  article     Article? @relation
+}
+
+model Collection {
+  id       Int                 @id @default(autoincrement())
+  name     String              @db.VarChar(255)
+  userId   Int
+  user     User                @relation(fields: [userId], references: [id])
+  articles CollectionArticle[] // 多对多关系，通过中间表实现
+}
+
+model CollectionArticle {
+  collectionId Int
+  articleId    Int
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  article      Article    @relation(fields: [articleId], references: [id])
+
+  @@id([collectionId, articleId])
+}
+
+model Like {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  articleId Int
+  user      User    @relation(fields: [userId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id])
+
+  @@unique([userId, articleId])
+}
+
+enum Role {
+  ADMIN
+  ACCOUNT
 }
