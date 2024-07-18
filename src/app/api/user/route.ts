@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
     data: {
       name: 'Elliott',
       email: 'xelliottx@example-user.com',
-      image: 'something'
-    }
+      image: 'something',
+    },
   })
 
   return NextResponse.json({ user: newUser })
@@ -24,13 +24,13 @@ export async function PUT(request: NextRequest) {
   }
   const updatedUser = await prisma.user.update({
     where: {
-      id: user.id
+      id: user.id,
     },
     data: {
       name: 'Elliott',
       email: 'xelliottx@example-user.com',
-      image: 'something'
-    }
+      image: 'something',
+    },
   })
   return NextResponse.json({ user: updatedUser })
 }
@@ -43,8 +43,8 @@ export async function DELETE() {
   }
   await prisma.user.delete({
     where: {
-      id: user.id
-    }
+      id: user.id,
+    },
   })
 }
 

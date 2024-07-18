@@ -7,8 +7,8 @@ export async function createUser() {
     data: {
       name: 'Elliott',
       email: 'xelliottx@example-user.com',
-      image: ''
-    }
+      image: '',
+    },
   })
 
   return newUser
@@ -21,8 +21,8 @@ export async function deleteUser() {
   }
   await prisma.user.delete({
     where: {
-      id: user.id
-    }
+      id: user.id,
+    },
   })
 }
 

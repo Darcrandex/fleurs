@@ -10,10 +10,10 @@ import { PropsWithChildren } from 'react'
 export default function HomeLayout(props: PropsWithChildren) {
   return (
     <>
-      <section className='flex flex-col h-screen'>
-        <header className='p-2 text-lg border-b'>Fleurs</header>
+      <section className='flex h-screen flex-col'>
+        <header className='border-b p-2 text-lg'>Fleurs</header>
 
-        <section className='flex-1 flex'>
+        <section className='flex flex-1'>
           <aside className='w-60 border-r'>
             <nav className='space-y-2'>
               <Link className='block' href='/'>

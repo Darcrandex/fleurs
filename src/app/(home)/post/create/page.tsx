@@ -19,7 +19,7 @@ export default function PostCreate() {
     const fileObj = elRef.current.files?.[0]
     const res = await fetch(`/api/oss/upload?filename=${fileObj?.name}`, {
       method: 'POST',
-      body: fileObj
+      body: fileObj,
     })
 
     const newBlob = (await res.json()) as PutBlobResult

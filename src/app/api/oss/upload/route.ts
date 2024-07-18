@@ -8,9 +8,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (!request.body || !filename) {
     return NextResponse.json(
       {
-        error: 'request body is empty'
+        error: 'request body is empty',
       },
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -22,7 +22,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // ⚠️ The below code is for App Router Route Handlers only
   const blob = await put(pathname, request.body, {
-    access: 'public'
+    access: 'public',
   })
 
   // Here's the code for Pages API Routes:
