@@ -1,3 +1,5 @@
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { ConfigProvider } from 'antd'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -16,7 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AntdRegistry>
+          <ConfigProvider theme={{ token: { colorPrimary: '#f43f5e' } }}>{children}</ConfigProvider>
+        </AntdRegistry>
+      </body>
     </html>
   )
 }
