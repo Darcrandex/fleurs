@@ -1,7 +1,10 @@
+import QueryProvider from '@/lib/providers/QueryProvider'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ConfigProvider } from 'antd'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Suspense } from 'react'
+import { violet } from 'tailwindcss/colors'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -19,9 +22,13 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <AntdRegistry>
-          <ConfigProvider theme={{ token: { colorPrimary: '#f43f5e' } }}>{children}</ConfigProvider>
-        </AntdRegistry>
+        <QueryProvider>
+          <Suspense fallback={null}>
+            <AntdRegistry>
+              <ConfigProvider theme={{ token: { colorPrimary: violet[500] } }}>{children}</ConfigProvider>
+            </AntdRegistry>
+          </Suspense>
+        </QueryProvider>
       </body>
     </html>
   )

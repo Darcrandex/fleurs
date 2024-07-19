@@ -35,19 +35,13 @@ model Article {
   updatedAt   DateTime            @updatedAt
   authorId    Int
   author      User                @relation(fields: [authorId], references: [id])
-  cover       Cover?              @relation(fields: [coverId], references: [id])
-  coverId     Int?                @unique // Ensure coverId is unique for one-to-one relationship
+  coverUrl    String              @db.VarChar(255) // 替换 cover 模型的 url 字段
+  coverWidth  Int
+  coverHeight Int
+  aspectRatio Decimal // 封面图片的宽高比
   collections CollectionArticle[] // 多对多关系，通过中间表实现
   likes       Like[] // 一对多关系，文章可以被多用户点赞
-}
-
-model Cover {
-  id          Int      @id @default(autoincrement())
-  url         String   @db.VarChar(255)
-  width       Int
-  height      Int
-  aspectRatio Decimal
-  article     Article? @relation
+  tags        ArticleTag[] // 多对多关系，通过中间表实现
 }
 
 model Collection {
@@ -65,6 +59,21 @@ model CollectionArticle {
   article      Article    @relation(fields: [articleId], references: [id])
 
   @@id([collectionId, articleId])
+}
+
+model Tag {
+  id       Int          @id @default(autoincrement())
+  name     String       @unique @db.VarChar(255)
+  articles ArticleTag[] // 多对多关系，通过中间表实现
+}
+
+model ArticleTag {
+  articleId Int
+  tagId     Int
+  article   Article @relation(fields: [articleId], references: [id])
+  tag       Tag     @relation(fields: [tagId], references: [id])
+
+  @@id([articleId, tagId])
 }
 
 model Like {

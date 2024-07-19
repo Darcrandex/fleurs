@@ -1,5 +1,5 @@
 /**
- * @name Login
+ * @name SignUp
  * @description
  * @author darcrand
  */
@@ -11,22 +11,21 @@ import { Button, Form, Input } from 'antd'
 import CryptoJS from 'crypto-js'
 import { useRouter } from 'next/navigation'
 
-export default function Login() {
+export default function SignUp() {
   const [form] = Form.useForm()
   const router = useRouter()
 
   const { mutate } = useMutation({
     mutationFn: async (values: any) => {
-      const { email, password } = values
-      return await authService.login({ email, password })
+      const { email, password, nickname } = values
+      await authService.signUp({ email, password, nickname, avatar: '' })
     },
     onError(error) {
-      console.log('error ===>', error)
+      console.log('error', error)
     },
     onSuccess(data) {
       console.log('data', data)
-      window.localStorage.setItem('token', data.token)
-      router.replace('/')
+      router.replace('/login')
     },
   })
 
@@ -37,6 +36,7 @@ export default function Login() {
     const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.AES_ENCRYPT_KEY || '').toString()
     mutate({ email, password: encryptedPassword, nickname })
   }
+
   return (
     <>
       <section className='mx-auto mt-20 w-96 max-w-full rounded-lg p-6 shadow-lg'>
@@ -57,6 +57,15 @@ export default function Login() {
             rules={[{ required: true, message: 'password is required' }]}
           >
             <Input.Password maxLength={50} />
+          </Form.Item>
+
+          <Form.Item
+            name='nickname'
+            label='Nickname'
+            required
+            rules={[{ required: true, message: 'nickname is required' }]}
+          >
+            <Input maxLength={50} />
           </Form.Item>
 
           <Form.Item>

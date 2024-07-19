@@ -4,6 +4,7 @@
  * @author darcrand
  */
 
+import TopHeader from '@/components/TopHeader'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 
@@ -11,7 +12,7 @@ export default function HomeLayout(props: PropsWithChildren) {
   return (
     <>
       <section className='flex h-screen flex-col'>
-        <header className='border-b p-2 text-lg'>Fleurs</header>
+        <TopHeader />
 
         <section className='flex flex-1'>
           <aside className='w-60 border-r'>
@@ -22,13 +23,13 @@ export default function HomeLayout(props: PropsWithChildren) {
               <Link className='block' href='/user'>
                 User
               </Link>
-              <Link className='block' href='/post'>
-                Post
+              <Link className='block' href='/article'>
+                Article
               </Link>
             </nav>
           </aside>
 
-          <main className='flex-1'>{props.children}</main>
+          <main className='flex-1 overflow-auto'>{props.children}</main>
         </section>
       </section>
     </>

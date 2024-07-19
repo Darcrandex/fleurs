@@ -1,30 +1,60 @@
 /**
- * @name Post
+ * @name PostList
  * @description post list
  * @author darcrand
  */
 
-import Link from 'next/link'
+'use client'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { Button, Form, Input } from 'antd'
+import { usePathname, useRouter } from 'next/navigation'
+import QueryString from 'qs'
+import * as R from 'ramda'
+import { useEffect } from 'react'
 
-export default function Post() {
+type PostListProps = {
+  searchParams: {
+    page?: string
+    pageSize?: string
+    keyword?: string
+  }
+}
+
+export default function PostList(props: PostListProps) {
+  const { data } = useSuspenseQuery({
+    queryKey: ['posts', props.searchParams],
+    queryFn: async () => {
+      console.log('queryFn', props.searchParams)
+      const query = QueryString.stringify(props.searchParams, { indices: false })
+      const res = await fetch(`http://localhost:3000/api/article${query ? `?${query}` : ''}`)
+      const data = await res.json()
+      return data
+    },
+  })
+
+  useEffect(() => {
+    console.log('data', data)
+  }, [data])
+
+  const router = useRouter()
+  const pathname = usePathname()
+  const onSubmit = async (values?: any) => {
+    const params = JSON.parse(JSON.stringify(values))
+    const url =
+      R.isNotNil(params) && R.isNotEmpty(params) ? `${pathname}?${new URLSearchParams(params).toString()}` : pathname
+    router.replace(url)
+  }
+
   return (
     <>
-      <h1>Post</h1>
-
-      <ol>
-        <li>
-          <Link href='/post/1'>post 1</Link>
-        </li>
-        <li>
-          <Link href='/post/2'>post 2</Link>
-        </li>
-        <li>
-          <Link href='/post/3'>post 3</Link>
-        </li>
-        <li>
-          <Link href='/post/4'>post 4</Link>
-        </li>
-      </ol>
+      <Form layout='inline' initialValues={props.searchParams} onFinish={onSubmit}>
+        <Form.Item name='keyword' label='标题'>
+          <Input placeholder='keyword' allowClear maxLength={20} />
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType='submit'>查询</Button>
+        </Form.Item>
+      </Form>
     </>
   )
 }

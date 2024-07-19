@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  reactStrictMode: false,
 
-export default nextConfig;
+  // for client side
+  env: { AES_ENCRYPT_KEY: process.env.AES_ENCRYPT_KEY },
+}
+
+export default nextConfig
