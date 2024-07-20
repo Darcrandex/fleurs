@@ -1,3 +1,8 @@
 {
-  "extends": ["next/core-web-vitals"]
+  "extends": ["next/core-web-vitals"],
+
+  "rules": {
+    // 不要使用 next/image 一堆坑
+    "@next/next/no-img-element": "off"
+  }
 }

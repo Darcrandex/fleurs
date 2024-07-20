@@ -5,9 +5,9 @@
  */
 
 'use client'
-
 import { authService } from '@/services/auth'
 import { useQuery } from '@tanstack/react-query'
+import { Button } from 'antd'
 
 export default function TopHeader() {
   const { data } = useQuery({
@@ -17,9 +17,10 @@ export default function TopHeader() {
 
   return (
     <>
-      <header className='flex border-b p-2'>
+      <header className='flex items-center border-b p-2'>
         <h1 className='text-lg font-bold'>Fleurs</h1>
-        <span className='ml-auto'>{data?.nickname}</span>
+
+        <div className='ml-auto'>{data?.id ? <span>{data?.nickname}</span> : <Button href='/login'>Login</Button>}</div>
       </header>
     </>
   )

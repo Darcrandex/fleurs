@@ -15,7 +15,7 @@ export default function Login() {
   const [form] = Form.useForm()
   const router = useRouter()
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (values: any) => {
       const { email, password } = values
       return await authService.login({ email, password })
@@ -60,7 +60,7 @@ export default function Login() {
           </Form.Item>
 
           <Form.Item>
-            <Button htmlType='submit' type='primary'>
+            <Button htmlType='submit' type='primary' loading={isPending}>
               Submit
             </Button>
           </Form.Item>

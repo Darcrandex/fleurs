@@ -47,8 +47,8 @@ export default function ArticleList(props: ArticleListProps) {
           <Col key={v.id} span={8}>
             <Card
               hoverable
-              style={{ width: 240 }}
-              cover={<img src={v.coverUrl} alt={v.title} width={240} height={120} />}
+              cover={<img src={v.coverUrl} alt={v.title} height={120} />}
+              onClick={() => router.push(`/article/${v.id}`)}
             >
               <Card.Meta title={v.title} description={v.content} />
             </Card>

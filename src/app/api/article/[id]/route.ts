@@ -4,19 +4,18 @@ import { NextRequest, NextResponse } from 'next/server'
 const prisma = new PrismaClient()
 
 // get article
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const id = Number(searchParams.get('id') || 0)
-  const article = await prisma.article.findUnique({ where: { id }, include: { cover: true } })
+export async function GET(request: NextRequest, ctx: { params: { id: string } }) {
+  const articleId = Number(ctx.params.id || 0)
+  const article = await prisma.article.findUnique({ where: { id: articleId } })
   return NextResponse.json(article)
 }
 
 // update article
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, ctx: { params: { id: string } }) {
   const data = await request.json()
 
   const updatedArticle = await prisma.article.update({
-    where: { id: data.id },
+    where: { id: Number(ctx.params.id) },
     data,
   })
 
@@ -24,9 +23,19 @@ export async function PUT(request: NextRequest) {
 }
 
 // delete article
-export async function DELETE(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const id = Number(searchParams.get('id') || 0)
-  const deletedArticle = await prisma.article.delete({ where: { id } })
-  return NextResponse.json(deletedArticle)
+export async function DELETE(request: NextRequest, ctx: { params: { id: string } }) {
+  const articleId = Number(ctx.params.id || 0)
+
+  try {
+    const deletedArticle = await prisma.article.delete({
+      where: { id: articleId },
+    })
+    console.log('Article deleted:', deletedArticle)
+  } catch (error) {
+    console.error('Error deleting article:', error)
+  } finally {
+    await prisma.$disconnect()
+  }
+
+  return NextResponse.json(articleId)
 }

@@ -21,9 +21,9 @@ model User {
   nickname    String       @db.VarChar(255)
   avatar      String       @db.VarChar(255)
   role        Role
-  articles    Article[] // 一对多关系，用户可以有多篇文章
-  collections Collection[] // 一对多关系，用户可以有多个收藏夹
-  likes       Like[] // 一对多关系，用户可以点赞多篇文章
+  articles    Article[]
+  collections Collection[]
+  likes       Like[]
 }
 
 model Article {
@@ -33,30 +33,30 @@ model Article {
   published   Boolean             @default(false)
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
-  authorId    Int
-  author      User                @relation(fields: [authorId], references: [id])
-  coverUrl    String              @db.VarChar(255) // 替换 cover 模型的 url 字段
+  authorId    Int?
+  author      User?               @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  coverUrl    String              @db.VarChar(255)
   coverWidth  Int
   coverHeight Int
-  aspectRatio Decimal // 封面图片的宽高比
-  collections CollectionArticle[] // 多对多关系，通过中间表实现
-  likes       Like[] // 一对多关系，文章可以被多用户点赞
-  tags        ArticleTag[] // 多对多关系，通过中间表实现
+  aspectRatio Decimal
+  collections CollectionArticle[]
+  likes       Like[]
+  tags        ArticleTag[]
 }
 
 model Collection {
   id       Int                 @id @default(autoincrement())
   name     String              @db.VarChar(255)
-  userId   Int
-  user     User                @relation(fields: [userId], references: [id])
-  articles CollectionArticle[] // 多对多关系，通过中间表实现
+  userId   Int?
+  user     User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  articles CollectionArticle[]
 }
 
 model CollectionArticle {
   collectionId Int
   articleId    Int
-  collection   Collection @relation(fields: [collectionId], references: [id])
-  article      Article    @relation(fields: [articleId], references: [id])
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  article      Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@id([collectionId, articleId])
 }
@@ -64,14 +64,14 @@ model CollectionArticle {
 model Tag {
   id       Int          @id @default(autoincrement())
   name     String       @unique @db.VarChar(255)
-  articles ArticleTag[] // 多对多关系，通过中间表实现
+  articles ArticleTag[]
 }
 
 model ArticleTag {
   articleId Int
   tagId     Int
-  article   Article @relation(fields: [articleId], references: [id])
-  tag       Tag     @relation(fields: [tagId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([articleId, tagId])
 }
@@ -80,8 +80,8 @@ model Like {
   id        Int     @id @default(autoincrement())
   userId    Int
   articleId Int
-  user      User    @relation(fields: [userId], references: [id])
-  article   Article @relation(fields: [articleId], references: [id])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, articleId])
 }
