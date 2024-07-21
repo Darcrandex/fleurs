@@ -11,7 +11,6 @@ import { PropsWithChildren } from 'react'
 const menus = [
   { href: '/home', title: 'Home' },
   { href: '/home/user', title: 'User' },
-  { href: '/home/article', title: 'Article' },
   { href: '/home/post', title: 'Post' },
   { href: '/home/category', title: 'Category' },
 ]
