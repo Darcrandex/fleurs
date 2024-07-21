@@ -5,7 +5,9 @@
  */
 
 'use client'
+import { TOKEN_STORAGE_KEY } from '@/constant/common'
 import { authService } from '@/services/auth'
+import { User } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Form, Input } from 'antd'
 import CryptoJS from 'crypto-js'
@@ -16,26 +18,21 @@ export default function Login() {
   const router = useRouter()
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (values: any) => {
-      const { email, password } = values
-      return await authService.login({ email, password })
-    },
-    onError(error) {
-      console.log('error ===>', error)
-    },
+    mutationFn: async (values: Pick<User, 'email' | 'password'>) => authService.login(values),
+
     onSuccess(data) {
-      console.log('data', data)
-      window.localStorage.setItem('token', data.token)
-      router.replace('/')
+      console.log('登录成功', data)
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, data.token)
+      router.replace('/home')
     },
   })
 
   const onSubmit = async (values: any) => {
     console.log(values)
 
-    const { email, password, nickname } = values
+    const { email, password } = values
     const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.AES_ENCRYPT_KEY || '').toString()
-    mutate({ email, password: encryptedPassword, nickname })
+    mutate({ email, password: encryptedPassword })
   }
   return (
     <>

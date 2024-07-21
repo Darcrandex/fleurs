@@ -8,6 +8,14 @@ import TopHeader from '@/components/TopHeader'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 
+const menus = [
+  { href: '/home', title: 'Home' },
+  { href: '/home/user', title: 'User' },
+  { href: '/home/article', title: 'Article' },
+  { href: '/home/post', title: 'Post' },
+  { href: '/home/category', title: 'Category' },
+]
+
 export default function HomeLayout(props: PropsWithChildren) {
   return (
     <>
@@ -17,15 +25,11 @@ export default function HomeLayout(props: PropsWithChildren) {
         <section className='flex flex-1'>
           <aside className='w-60 border-r'>
             <nav className='space-y-2'>
-              <Link className='block' href='/'>
-                Home
-              </Link>
-              <Link className='block' href='/user'>
-                User
-              </Link>
-              <Link className='block' href='/article'>
-                Article
-              </Link>
+              {menus.map((item) => (
+                <Link key={item.href} className='block' href={item.href}>
+                  {item.title}
+                </Link>
+              ))}
             </nav>
           </aside>
 

@@ -6,7 +6,17 @@ const prisma = new PrismaClient()
 // get article
 export async function GET(request: NextRequest, ctx: { params: { id: string } }) {
   const articleId = Number(ctx.params.id || 0)
-  const article = await prisma.article.findUnique({ where: { id: articleId } })
+
+  const article = await prisma.article.findUnique({
+    where: { id: articleId },
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  })
   return NextResponse.json(article)
 }
 

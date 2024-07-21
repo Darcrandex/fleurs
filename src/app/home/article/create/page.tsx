@@ -7,21 +7,27 @@
 'use client'
 import { articelService } from '@/services/article'
 import { ossService } from '@/services/oss'
+import { tagService } from '@/services/tag'
 import { getImageSize } from '@/utils/getImageSize'
 import { Article } from '@prisma/client'
-import { useMutation } from '@tanstack/react-query'
-import { Button, Form, Input, Spin } from 'antd'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button, Form, Input, Select, Space, Spin, message } from 'antd'
 import Decimal from 'decimal.js'
 import { useRouter } from 'next/navigation'
-import { useRef } from 'react'
+import { KeyboardEventHandler, useRef, useState } from 'react'
 
 export default function ArticleCreate() {
   const [form] = Form.useForm()
   const router = useRouter()
   const elRef = useRef<HTMLInputElement>(null)
 
+  const { data: tagOptions } = useQuery({
+    queryKey: ['tags'],
+    queryFn: () => tagService.all(),
+  })
+
   const createMutation = useMutation({
-    mutationFn: async (values: Pick<Article, 'title' | 'content'> & { file?: File }) => {
+    mutationFn: async (values: Pick<Article, 'title' | 'content'> & { file?: File; tags?: string[] }) => {
       if (!values.file) throw new Error('cover is required')
 
       const imgSize = await getImageSize(values.file)
@@ -34,6 +40,7 @@ export default function ArticleCreate() {
         coverWidth: imgSize.width,
         coverHeight: imgSize.height,
         aspectRatio: new Decimal(imgSize.aspectRatio),
+        tags: values.tags,
       })
     },
     onError(error) {
@@ -71,6 +78,10 @@ export default function ArticleCreate() {
               <input ref={elRef} type='file' accept='image/*' />
             </Form.Item>
 
+            <Form.Item label='Tags' name='tags'>
+              <Select mode='tags' options={tagOptions} fieldNames={{ label: 'name', value: 'name' }} />
+            </Form.Item>
+
             <Form.Item>
               <Button htmlType='submit' type='primary'>
                 ok
@@ -79,6 +90,63 @@ export default function ArticleCreate() {
           </Form>
         </Spin>
       </section>
+    </>
+  )
+}
+
+function TagSelect(props: { value?: number; onChange?: (value?: number) => void }) {
+  const { data: tagOptions } = useQuery({
+    queryKey: ['tags'],
+    queryFn: () => tagService.all(),
+  })
+
+  const [messageApi, contextHolder] = message.useMessage()
+  const queryClient = useQueryClient()
+
+  const addTagMutation = useMutation({
+    mutationFn: async (tagName: string) => {
+      await tagService.create({ name: tagName })
+    },
+    onSuccess() {
+      messageApi.success('create tag success')
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
+    },
+  })
+
+  const [text, setText] = useState('')
+  const onEnter: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === 'Enter' && text.trim()) {
+      setText('')
+      addTagMutation.mutate(text)
+    }
+  }
+
+  return (
+    <>
+      {contextHolder}
+
+      <Space>
+        <Select
+          className='!w-60'
+          mode='multiple'
+          options={tagOptions}
+          fieldNames={{ label: 'name', value: 'id' }}
+          value={props.value}
+          onChange={props.onChange}
+          allowClear
+          placeholder=''
+        />
+
+        <Input
+          className='w-24'
+          maxLength={20}
+          placeholder='add tag'
+          allowClear
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyUp={onEnter}
+        />
+      </Space>
     </>
   )
 }

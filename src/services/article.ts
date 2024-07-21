@@ -16,9 +16,7 @@ export const articelService = {
     return res.data
   },
 
-  create: async (
-    data: Pick<Article, 'title' | 'content' | 'coverUrl' | 'coverWidth' | 'coverHeight' | 'aspectRatio'>,
-  ) => {
+  create: async (data: Record<string, any>) => {
     const res = await http.post<Article>('/api/article', data)
     return res.data
   },

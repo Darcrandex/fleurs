@@ -8,7 +8,25 @@ const prisma = new PrismaClient()
 export async function POST(request: NextRequest) {
   const user = await getUserFromToken(request)
   const data = await request.json()
-  const newArticle = await prisma.article.create({ data: { authorId: user.id, ...data } })
+  const { tags = [], ...rest } = data
+
+  const newArticle = await prisma.article.create({
+    data: {
+      authorId: user.id,
+      tags: {
+        create: tags.map((tagName: string) => ({
+          tag: {
+            connectOrCreate: {
+              where: { name: tagName },
+              create: { name: tagName },
+            },
+          },
+        })),
+      },
+
+      ...rest,
+    },
+  })
   return NextResponse.json(newArticle)
 }
 

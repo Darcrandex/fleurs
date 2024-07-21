@@ -6,7 +6,8 @@
 
 'use client'
 import { authService } from '@/services/auth'
-import { useMutation } from '@tanstack/react-query'
+import { Prisma } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Form, Input } from 'antd'
 import CryptoJS from 'crypto-js'
 import { useRouter } from 'next/navigation'
@@ -14,27 +15,22 @@ import { useRouter } from 'next/navigation'
 export default function SignUp() {
   const [form] = Form.useForm()
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationFn: async (values: any) => {
-      const { email, password, nickname } = values
-      await authService.signUp({ email, password, nickname, avatar: '' })
-    },
-    onError(error) {
-      console.log('error', error)
-    },
-    onSuccess(data) {
-      console.log('data', data)
+    mutationFn: async (values: Prisma.UserCreateInput) => authService.signUp(values),
+    onSuccess() {
+      queryClient.invalidateQueries()
       router.replace('/login')
     },
   })
 
-  const onSubmit = async (values: any) => {
-    console.log(values)
+  const onSubmit = async (values: Prisma.UserCreateInput) => {
+    console.log('用户注册', values)
 
-    const { email, password, nickname } = values
+    const { email, password, name } = values
     const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.AES_ENCRYPT_KEY || '').toString()
-    mutate({ email, password: encryptedPassword, nickname })
+    mutate({ email, password: encryptedPassword, name })
   }
 
   return (
@@ -59,12 +55,7 @@ export default function SignUp() {
             <Input.Password maxLength={50} />
           </Form.Item>
 
-          <Form.Item
-            name='nickname'
-            label='Nickname'
-            required
-            rules={[{ required: true, message: 'nickname is required' }]}
-          >
+          <Form.Item name='name' label='Name' required rules={[{ required: true, message: 'name is required' }]}>
             <Input maxLength={50} />
           </Form.Item>
 

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, User } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
 import CryptoJS from 'crypto-js'
 import * as jose from 'jose'
@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   // password is encrypted
-  const { email, password } = await request.json()
+  const { email, password } = (await request.json()) as Pick<User, 'email' | 'password'>
 
   const matchedUser = await prisma.user.findUnique({ where: { email } })
 
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
   const token = await new jose.SignJWT(R.omit(['password'], matchedUser))
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
+    // 过期时间为 1 天
     .setExpirationTime('1d')
     .sign(new TextEncoder().encode(process.env.JWT_SECRET || ''))
 

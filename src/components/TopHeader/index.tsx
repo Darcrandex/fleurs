@@ -20,7 +20,7 @@ export default function TopHeader() {
       <header className='flex items-center border-b p-2'>
         <h1 className='text-lg font-bold'>Fleurs</h1>
 
-        <div className='ml-auto'>{data?.id ? <span>{data?.nickname}</span> : <Button href='/login'>Login</Button>}</div>
+        <div className='ml-auto'>{data?.id ? <span>{data?.name}</span> : <Button href='/login'>Login</Button>}</div>
       </header>
     </>
   )
