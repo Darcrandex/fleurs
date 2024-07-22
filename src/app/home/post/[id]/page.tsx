@@ -7,11 +7,11 @@
 'use client'
 import { postService } from '@/services/post'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, message, Modal } from 'antd'
-import { useParams, useRouter } from 'next/navigation'
+import { Button, message, Modal, Space } from 'antd'
+import { useRouter } from 'next/navigation'
 
-export default function PostDetail() {
-  const id = useParams().id as string
+export default function PostDetail(props: { params: { id: string } }) {
+  const id = props.params.id
   const router = useRouter()
   const queryClient = useQueryClient()
   const [messageApi] = message.useMessage()
@@ -38,13 +38,15 @@ export default function PostDetail() {
       <h2>{data?.title}</h2>
       <p>{data?.content}</p>
 
-      <footer>
+      <Space>
         <Button
           onClick={() => modal.confirm({ content: '确定删除吗?', onOk: () => removeMutation.mutate(Number(id)) })}
         >
           remove
         </Button>
-      </footer>
+
+        <Button href={`/home/post/${id}/edit`}>edit</Button>
+      </Space>
     </>
   )
 }

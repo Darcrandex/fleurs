@@ -23,4 +23,9 @@ export const postService = {
     const res = await http.delete(`/api/post/${id}`)
     return res.data
   },
+
+  update: async (id: number, data: Prisma.PostUncheckedUpdateInput) => {
+    const res = await http.put<Post>(`/api/post/${id}`, data)
+    return res.data
+  },
 }

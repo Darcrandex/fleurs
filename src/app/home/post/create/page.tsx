@@ -5,6 +5,7 @@
  */
 
 'use client'
+import ImageUpload from '@/components/ImageUpload'
 import { categoryService } from '@/services/category'
 import { ossService } from '@/services/oss'
 import { postService } from '@/services/post'
@@ -13,12 +14,10 @@ import { Prisma } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Form, Input, Select, Spin } from 'antd'
 import { useRouter } from 'next/navigation'
-import { useRef } from 'react'
 
 export default function PostCreate() {
   const [form] = Form.useForm()
   const router = useRouter()
-  const elRef = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
 
   const { data: categories } = useQuery({
@@ -27,11 +26,11 @@ export default function PostCreate() {
   })
 
   const createMutation = useMutation({
-    mutationFn: async (values: Prisma.PostUncheckedCreateInput & { file?: File }) => {
-      if (!values.file) throw new Error('cover is required')
+    mutationFn: async (values: Prisma.PostUncheckedCreateInput & { cover?: File }) => {
+      if (!values.cover) throw new Error('cover is required')
 
-      const imgSize = await getImageSize(values.file)
-      const { url: coverUrl } = await ossService.upload(values.file)
+      const imgSize = await getImageSize(values.cover)
+      const { url: coverUrl } = await ossService.upload(values.cover)
 
       await postService.create({
         authorId: -1, // 一个假的 id
@@ -53,17 +52,15 @@ export default function PostCreate() {
   })
 
   const onSubmit = async (values: any) => {
-    console.log('values', values)
-    console.log('cover file', elRef.current?.files?.[0])
-
-    createMutation.mutate({ ...values, file: elRef.current?.files?.[0] })
+    console.log('create post values', values)
+    createMutation.mutate(values)
   }
 
   return (
     <>
       <h1>PostCreate</h1>
 
-      <section className='mx-auto w-[800px] max-w-full'>
+      <section className='mx-auto w-md max-w-full'>
         <Spin spinning={createMutation.isPending}>
           <Form form={form} layout='vertical' onFinish={onSubmit}>
             <Form.Item label='title' name='title'>
@@ -75,8 +72,8 @@ export default function PostCreate() {
             </Form.Item>
 
             {/* 先不考虑重新编辑的情况 */}
-            <Form.Item label='cover'>
-              <input ref={elRef} type='file' accept='image/*' />
+            <Form.Item label='cover' name='cover'>
+              <ImageUpload />
             </Form.Item>
 
             <Form.Item label='categoryId' name='categoryId'>

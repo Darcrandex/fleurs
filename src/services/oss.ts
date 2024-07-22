@@ -15,7 +15,12 @@ export const ossService = {
   },
 
   getMeta: async (url: string) => {
-    const res = await http.get<HeadBlobResult>(url)
+    const res = await http.get<HeadBlobResult>('/api/oss/image', { params: { url } })
+    return res.data
+  },
+
+  remove: async (url: string) => {
+    const res = await http.delete('/api/oss/image', { params: { url } })
     return res.data
   },
 }
