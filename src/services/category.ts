@@ -13,4 +13,9 @@ export const categoryService = {
     const res = await http.post<Category>('/api/category', data)
     return res.data
   },
+
+  remove: async (id: number) => {
+    const res = await http.delete(`/api/category/${id}`)
+    return res.data
+  },
 }

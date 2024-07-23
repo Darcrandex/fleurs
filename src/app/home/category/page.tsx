@@ -5,15 +5,14 @@
  */
 
 'use client'
-
 import { categoryService } from '@/services/category'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Input, message } from 'antd'
+import { App, Button, Input, Space } from 'antd'
 import { useState } from 'react'
 
 export default function Category() {
   const queryClient = useQueryClient()
-  const [messageApi, contextHolder] = message.useMessage()
+  const { message, modal } = App.useApp()
 
   const { data } = useQuery({
     queryKey: ['category', 'all'],
@@ -24,18 +23,28 @@ export default function Category() {
   const createMutation = useMutation({
     mutationFn: (name: string) => categoryService.create({ name }),
     onError: () => {
-      messageApi.error('create category error')
+      message.error('create category error')
     },
     onSuccess: () => {
+      message.success('create success')
       queryClient.invalidateQueries({ queryKey: ['category'] })
       setText('')
     },
   })
 
+  const removeMutation = useMutation({
+    mutationFn: (id: number) => categoryService.remove(id),
+    onError: () => {
+      message.error('remove category error')
+    },
+    onSuccess: () => {
+      message.success('removed')
+      queryClient.invalidateQueries({ queryKey: ['category'] })
+    },
+  })
+
   return (
     <>
-      {contextHolder}
-
       <h1>Category</h1>
 
       <div className='m-4'>
@@ -52,8 +61,17 @@ export default function Category() {
 
       <ol className='m-4 space-y-2'>
         {data?.map((item: any) => (
-          <li key={item.id} className='p-2'>
+          <li key={item.id} className='flex justify-between p-2'>
             <p>{item.name}</p>
+            <Space>
+              <Button
+                onClick={() =>
+                  modal.confirm({ content: 'Are you sure?', onOk: () => removeMutation.mutateAsync(item.id) })
+                }
+              >
+                remove
+              </Button>
+            </Space>
           </li>
         ))}
       </ol>

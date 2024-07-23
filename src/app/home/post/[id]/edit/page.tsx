@@ -104,7 +104,13 @@ export default function PostEdit(props: { params: { id: string } }) {
         </Form.Item>
 
         <Form.Item label='Tags' name='tags'>
-          <Select mode='tags' />
+          <Select
+            mode='tags'
+            allowClear
+            maxLength={10}
+            maxTagTextLength={10}
+            maxTagCount={Number(process.env.ARTICLE_TAG_MAX_COUNT || 5)}
+          />
         </Form.Item>
 
         <Form.Item>
