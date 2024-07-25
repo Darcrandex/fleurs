@@ -6,7 +6,11 @@ import * as R from 'ramda'
 const prisma = new PrismaClient()
 
 export async function GET(request: NextRequest) {
-  const user = await getUserFromToken(request)
+  const current = await getUserFromToken(request)
+  const user = await prisma.user.findUnique({
+    where: { id: current.id },
+    include: { posts: true, likes: true, favorites: true },
+  })
 
   return NextResponse.json(user)
 }
