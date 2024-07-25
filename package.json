@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env.local -- node scripts/dev.mjs && next dev",
+    "dev": "dotenv -e .env.local -- node scripts/server.mjs",
     "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
