@@ -63,20 +63,24 @@ export default function PostCreate() {
       <section className='mx-auto w-md max-w-full'>
         <Spin spinning={createMutation.isPending}>
           <Form form={form} layout='vertical' onFinish={onSubmit}>
-            <Form.Item label='title' name='title'>
+            <Form.Item label='title' name='title' rules={[{ required: true, message: 'title is required' }]}>
               <Input maxLength={50} allowClear />
             </Form.Item>
 
-            <Form.Item label='content' name='content'>
+            <Form.Item label='content' name='content' rules={[{ required: true, message: 'content is required' }]}>
               <Input.TextArea maxLength={500} allowClear />
             </Form.Item>
 
             {/* 先不考虑重新编辑的情况 */}
-            <Form.Item label='cover' name='cover'>
+            <Form.Item label='cover' name='cover' rules={[{ required: true, message: 'cover is required' }]}>
               <ImageUpload />
             </Form.Item>
 
-            <Form.Item label='categoryId' name='categoryId'>
+            <Form.Item
+              label='categoryId'
+              name='categoryId'
+              rules={[{ required: true, message: 'categoryId is required' }]}
+            >
               <Select options={categories?.map((item) => ({ label: item.name, value: item.id }))} />
             </Form.Item>
 

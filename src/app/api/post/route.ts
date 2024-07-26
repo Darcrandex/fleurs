@@ -1,5 +1,5 @@
 import { getUserFromToken } from '@/utils/getUserFromToken.server'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient, Role } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 const prisma = new PrismaClient()
@@ -7,6 +7,11 @@ const prisma = new PrismaClient()
 // create post
 export async function POST(request: NextRequest) {
   const user = await getUserFromToken(request)
+  // 现版本只有管理员才能创建
+  if (user.role !== Role.ADMIN) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const data = (await request.json()) as Prisma.PostUncheckedCreateInput
   const newPost = await prisma.post.create({
     data: {
