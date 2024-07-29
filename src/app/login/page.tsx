@@ -60,6 +60,8 @@ export default function Login() {
             <Button htmlType='submit' type='primary' loading={isPending}>
               Submit
             </Button>
+
+            <Button href='/sign-up'>SignUp</Button>
           </Form.Item>
         </Form>
       </section>

@@ -10,8 +10,8 @@ import { COVER_THUMBNAIL_SIZE } from '@/constant/common'
 import { categoryService } from '@/services/category'
 import { ossService } from '@/services/oss'
 import { postService } from '@/services/post'
-import { compressAndEncodeImage } from '@/utils/compressAndEncodeImage.client'
 import { getImageSize } from '@/utils/getImageSize'
+import { resizeImageToData } from '@/utils/thumbnail.client'
 import { Prisma } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Form, Input, Select, Spin } from 'antd'
@@ -31,9 +31,13 @@ export default function PostCreate() {
     mutationFn: async (values: Prisma.PostUncheckedCreateInput & { cover?: File }) => {
       if (!values.cover) throw new Error('cover is required')
 
+      // 封面图片
       const imgSize = await getImageSize(values.cover)
       const { url: coverUrl } = await ossService.upload(values.cover)
-      const base64URL = await compressAndEncodeImage(values.cover, COVER_THUMBNAIL_SIZE)
+
+      // 封面缩略图
+      const { arrayBuffer } = await resizeImageToData(values.cover, COVER_THUMBNAIL_SIZE)
+      const { url: coverThumbnail } = await ossService.uploadAsBuffer(arrayBuffer, { bucket: 'thumbnail' })
 
       await postService.create({
         title: values.title,
@@ -42,7 +46,7 @@ export default function PostCreate() {
         coverWidth: imgSize.width,
         coverHeight: imgSize.height,
         coverAspectRatio: imgSize.aspectRatio,
-        coverThumbnailURL: base64URL,
+        coverThumbnail,
         categoryId: values.categoryId,
         tags: values.tags,
       })

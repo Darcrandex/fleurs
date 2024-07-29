@@ -14,6 +14,16 @@ export const ossService = {
     return res.data
   },
 
+  uploadAsBuffer: async (arrayBuffer: ArrayBuffer, params?: { bucket?: string }) => {
+    const res = await http.post<PutBlobResult>('/api/oss/image/buffer', arrayBuffer, {
+      params,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return res.data
+  },
+
   getMeta: async (url: string) => {
     const res = await http.get<HeadBlobResult>('/api/oss/image', { params: { url } })
     return res.data

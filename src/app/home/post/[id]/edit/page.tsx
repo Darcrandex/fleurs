@@ -10,8 +10,8 @@ import { COVER_THUMBNAIL_SIZE } from '@/constant/common'
 import { categoryService } from '@/services/category'
 import { ossService } from '@/services/oss'
 import { postService } from '@/services/post'
-import { compressAndEncodeImage } from '@/utils/compressAndEncodeImage.client'
 import { getImageSize } from '@/utils/getImageSize'
+import { resizeImageToData } from '@/utils/thumbnail.client'
 import { Prisma } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Form, Input, Select } from 'antd'
@@ -48,16 +48,21 @@ export default function PostEdit(props: { params: { id: string } }) {
       let coverWidth = data?.coverWidth || 0
       let coverHeight = data?.coverHeight || 0
       let coverAspectRatio = data?.coverAspectRatio || 1
-      let coverThumbnailURL = data?.coverThumbnailURL || ''
+      let coverThumbnail = data?.coverThumbnail || ''
 
       if (values.cover && typeof values.cover === 'object') {
         const imgSize = await getImageSize(values.cover)
         const { url } = await ossService.upload(values.cover)
+
+        // 封面缩略图
+        const { arrayBuffer } = await resizeImageToData(values.cover, COVER_THUMBNAIL_SIZE)
+        const { url: url2 } = await ossService.uploadAsBuffer(arrayBuffer, { bucket: 'thumbnail' })
+
         coverUrl = url
         coverWidth = imgSize.width
         coverHeight = imgSize.height
         coverAspectRatio = imgSize.aspectRatio
-        coverThumbnailURL = await compressAndEncodeImage(values.cover, COVER_THUMBNAIL_SIZE)
+        coverThumbnail = url2
       }
 
       await postService.update(data?.id, {

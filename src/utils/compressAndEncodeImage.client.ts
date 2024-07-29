@@ -4,7 +4,7 @@
 export async function compressAndEncodeImage(
   file: File,
   maxWidth: number = 375,
-  quality: number = 0.6,
+  quality: number = 0.9,
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
@@ -30,6 +30,7 @@ async function compressImage(imageUrl: string, maxWidth: number, quality: number
     throw new Error('canvas context is null')
   }
   ctx.drawImage(image, 0, 0, maxWidth, maxWidth * (image.height / image.width))
+
   const base64 = canvas.toDataURL('image/jpeg', { quality })
   return base64
 }

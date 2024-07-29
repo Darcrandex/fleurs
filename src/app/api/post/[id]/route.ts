@@ -40,6 +40,7 @@ export async function DELETE(request: NextRequest, ctx: { params: { id: string }
   // 删除关联的图片
   if (post.coverUrl) {
     await del(post.coverUrl)
+    await del(post.coverThumbnail)
   }
 
   await prisma.post.delete({ where: { id } })

@@ -31,7 +31,7 @@ export default function PostList() {
         {data?.records?.map((item) => (
           <li key={item.id} className='flex flex-col space-y-2 overflow-hidden rounded-md shadow'>
             <Image
-              src={item.coverThumbnailURL}
+              src={item.coverThumbnail}
               preview={{ src: item.coverUrl }}
               alt=''
               className='!h-48 w-full rounded-t-md object-cover'

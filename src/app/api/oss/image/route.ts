@@ -17,10 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // 多段路径时，会自动创建文件夹
   // 目前的业务场景，图片上传数量较少，按年份存储
   const pathname = `${bucket}/${dayjs().format('YYYY')}.${extension}`
-
-  const createdBlob = await put(pathname, request.body, {
-    access: 'public',
-  })
+  const createdBlob = await put(pathname, request.body, { access: 'public' })
 
   return NextResponse.json(createdBlob)
 }
