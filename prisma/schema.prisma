@@ -33,22 +33,23 @@ model User {
 }
 
 model Post {
-  id               Int            @id @default(autoincrement())
-  title            String
-  content          String?
-  published        Boolean        @default(false)
-  authorId         Int
-  author           User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments         Comment[]
-  categoryId       Int
-  category         Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  favorites        PostFavorite[]
-  likes            Like[]
-  tags             String[]       @default([])
-  coverUrl         String
-  coverWidth       Int
-  coverHeight      Int
-  coverAspectRatio Float
+  id                Int            @id @default(autoincrement())
+  title             String
+  content           String?
+  published         Boolean        @default(false)
+  authorId          Int
+  author            User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments          Comment[]
+  categoryId        Int
+  category          Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  favorites         PostFavorite[]
+  likes             Like[]
+  tags              String[]       @default([])
+  coverUrl          String
+  coverWidth        Int
+  coverHeight       Int
+  coverAspectRatio  Float
+  coverThumbnailURL String
 }
 
 model Comment {

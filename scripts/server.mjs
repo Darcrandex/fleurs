@@ -27,6 +27,8 @@ app.prepare().then(() => {
       process.exit(1)
     })
     .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}\n`)
+      console.log(`> Ready on\n`)
+      console.log(`- http://localhost:${port}`)
+      console.log(`- http://${hostname}:${port}\n`)
     })
 })

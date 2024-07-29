@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       coverWidth: data.coverWidth,
       coverHeight: data.coverHeight,
       coverAspectRatio: data.coverAspectRatio,
+      coverThumbnailURL: data.coverThumbnailURL,
     },
   })
 

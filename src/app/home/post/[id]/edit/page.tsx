@@ -6,9 +6,11 @@
 
 'use client'
 import ImageUpload from '@/components/ImageUpload'
+import { COVER_THUMBNAIL_SIZE } from '@/constant/common'
 import { categoryService } from '@/services/category'
 import { ossService } from '@/services/oss'
 import { postService } from '@/services/post'
+import { compressAndEncodeImage } from '@/utils/compressAndEncodeImage.client'
 import { getImageSize } from '@/utils/getImageSize'
 import { Prisma } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -46,6 +48,7 @@ export default function PostEdit(props: { params: { id: string } }) {
       let coverWidth = data?.coverWidth || 0
       let coverHeight = data?.coverHeight || 0
       let coverAspectRatio = data?.coverAspectRatio || 1
+      let coverThumbnailURL = data?.coverThumbnailURL || ''
 
       if (values.cover && typeof values.cover === 'object') {
         const imgSize = await getImageSize(values.cover)
@@ -54,6 +57,7 @@ export default function PostEdit(props: { params: { id: string } }) {
         coverWidth = imgSize.width
         coverHeight = imgSize.height
         coverAspectRatio = imgSize.aspectRatio
+        coverThumbnailURL = await compressAndEncodeImage(values.cover, COVER_THUMBNAIL_SIZE)
       }
 
       await postService.update(data?.id, {

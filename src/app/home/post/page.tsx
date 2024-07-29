@@ -30,7 +30,13 @@ export default function PostList() {
       <ol className='m-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6'>
         {data?.records?.map((item) => (
           <li key={item.id} className='flex flex-col space-y-2 overflow-hidden rounded-md shadow'>
-            <Image src={item.coverUrl} alt='' className='!h-48 w-full rounded-t-md object-cover' />
+            <Image
+              src={item.coverThumbnailURL}
+              preview={{ src: item.coverUrl }}
+              alt=''
+              className='!h-48 w-full rounded-t-md object-cover'
+            />
+
             <p className='cursor-pointer p-2' onClick={() => router.push(`/home/post/${item.id}`)}>
               {item.title}
             </p>

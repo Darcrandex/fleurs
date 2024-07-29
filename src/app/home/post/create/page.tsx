@@ -6,9 +6,11 @@
 
 'use client'
 import ImageUpload from '@/components/ImageUpload'
+import { COVER_THUMBNAIL_SIZE } from '@/constant/common'
 import { categoryService } from '@/services/category'
 import { ossService } from '@/services/oss'
 import { postService } from '@/services/post'
+import { compressAndEncodeImage } from '@/utils/compressAndEncodeImage.client'
 import { getImageSize } from '@/utils/getImageSize'
 import { Prisma } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -31,15 +33,16 @@ export default function PostCreate() {
 
       const imgSize = await getImageSize(values.cover)
       const { url: coverUrl } = await ossService.upload(values.cover)
+      const base64URL = await compressAndEncodeImage(values.cover, COVER_THUMBNAIL_SIZE)
 
       await postService.create({
-        authorId: -1, // 一个假的 id
         title: values.title,
         content: values.content,
         coverUrl,
         coverWidth: imgSize.width,
         coverHeight: imgSize.height,
         coverAspectRatio: imgSize.aspectRatio,
+        coverThumbnailURL: base64URL,
         categoryId: values.categoryId,
         tags: values.tags,
       })

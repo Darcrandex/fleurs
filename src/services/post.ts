@@ -14,7 +14,7 @@ export const postService = {
     return res.data
   },
 
-  create: async (data: Prisma.PostUncheckedCreateInput) => {
+  create: async (data: Omit<Prisma.PostUncheckedCreateInput, 'authorId'>) => {
     const res = await http.post<Post>('/api/post', data)
     return res.data
   },
