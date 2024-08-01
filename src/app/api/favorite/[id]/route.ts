@@ -27,8 +27,8 @@ export async function DELETE(request: NextRequest, ctx: { params: { id: string }
 export async function PUT(request: NextRequest, ctx: { params: { id: string } }) {
   const user = await getUserFromToken(request)
   const id = Number(ctx.params.id)
-  const query = request.nextUrl.searchParams
-  const name = query.get('name') || ''
+  const body = (await request.json()) as { name: string }
+  const name = body.name || ''
   const newFolder = await prisma.favorite.update({ where: { id, userId: user.id }, data: { name } })
   return NextResponse.json(newFolder)
 }

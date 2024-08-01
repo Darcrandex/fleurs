@@ -8,7 +8,10 @@ const prisma = new PrismaClient()
 
 // get post
 export async function GET(request: NextRequest, ctx: { params: { id: string } }) {
-  const post = await prisma.post.findUnique({ where: { id: Number(ctx.params.id) } })
+  const post = await prisma.post.findUnique({
+    where: { id: Number(ctx.params.id) },
+    include: { author: { select: { name: true, avatar: true } } },
+  })
   return NextResponse.json(post)
 }
 

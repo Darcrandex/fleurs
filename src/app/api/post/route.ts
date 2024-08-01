@@ -38,12 +38,14 @@ export async function GET(request: NextRequest) {
   const pageSize = Number(searchParams.get('pageSize') || 10)
   const keyword = searchParams.get('keyword') || undefined
   const categoryId = Number(searchParams.get('categoryId') || 0) || undefined
+  const favoriteId = Number(searchParams.get('favoriteId') || 0) || undefined
 
   const total = await prisma.post.count({ where: { title: { contains: keyword }, categoryId } })
   const records = await prisma.post.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: { title: { contains: keyword }, categoryId },
+    where: { title: { contains: keyword }, categoryId, favorites: { some: { favoriteId } } },
+    include: { author: { select: { name: true, avatar: true } } },
   })
 
   return NextResponse.json({ records, total, page, pageSize })

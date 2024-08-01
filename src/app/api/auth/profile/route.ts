@@ -9,10 +9,15 @@ export async function GET(request: NextRequest) {
   const current = await getUserFromToken(request)
   const user = await prisma.user.findUnique({
     where: { id: current.id },
-    include: { posts: true, likes: true, favorites: true },
+    // include: { posts: true, likes: true, favorites: true },
   })
 
-  return NextResponse.json(user)
+  // 由于嵌套查询数量不确定，只计算数量
+  const postCount = await prisma.post.count({ where: { authorId: current.id } })
+  const likeCount = await prisma.like.count({ where: { userId: current.id } })
+  const favoriteCount = await prisma.favorite.count({ where: { userId: current.id } })
+
+  return NextResponse.json({ ...user, postCount, likeCount, favoriteCount })
 }
 
 // update profile

@@ -30,6 +30,8 @@ model User {
   comments  Comment[]
   favorites Favorite[]
   likes     Like[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Post {
@@ -50,29 +52,37 @@ model Post {
   coverHeight      Int
   coverAspectRatio Float
   coverThumbnail   String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model Comment {
-  id       Int    @id @default(autoincrement())
-  content  String
-  postId   Int
-  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  authorId Int
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  content   String
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts Post[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Favorite {
-  id     Int            @id @default(autoincrement())
-  name   String
-  userId Int
-  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  posts  PostFavorite[]
+  id        Int            @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts     PostFavorite[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }
 
 model PostFavorite {

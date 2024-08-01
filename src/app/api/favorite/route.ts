@@ -22,7 +22,17 @@ export async function POST(request: NextRequest) {
 
 // get favorite folders
 export async function GET(request: NextRequest) {
-  const user = await getUserFromToken(request)
-  const favorites = await prisma.favorite.findMany({ where: { userId: user.id }, include: { posts: true } })
-  return NextResponse.json(favorites)
+  const searchParams = request.nextUrl.searchParams
+  const page = Number(searchParams.get('page') || 1)
+  const pageSize = Number(searchParams.get('pageSize') || 10)
+  const keyword = searchParams.get('keyword') || undefined
+
+  const total = await prisma.favorite.count({ where: { name: { contains: keyword } } })
+  const records = await prisma.favorite.findMany({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    where: { name: { contains: keyword } },
+  })
+
+  return NextResponse.json({ records, total, page, pageSize })
 }

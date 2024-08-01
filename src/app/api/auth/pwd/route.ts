@@ -1,7 +1,9 @@
 import { getUserFromToken } from '@/utils/getUserFromToken.server'
 import { PrismaClient } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
+import CryptoJS from 'crypto-js'
 import { NextRequest, NextResponse } from 'next/server'
+import * as R from 'ramda'
 
 const prisma = new PrismaClient()
 
@@ -16,6 +18,9 @@ export async function PUT(request: NextRequest) {
   const matchedUser = await prisma.user.findUnique({ where: { id: user.id } })
 
   const isValid = await bcrypt.compare(opwd, matchedUser?.password || '')
+
+  console.log('pwd', { opwd, npwd, isValid })
+
   if (!isValid) {
     return new NextResponse('old password is invalid', { status: 400 })
   }
@@ -28,5 +33,5 @@ export async function PUT(request: NextRequest) {
     data: { password: hashedPassword },
   })
 
-  return NextResponse.json(updatedUser)
+  return NextResponse.json(R.omit(['password'], updatedUser))
 }
