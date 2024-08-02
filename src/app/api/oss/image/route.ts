@@ -1,9 +1,12 @@
+import { getUserFromToken } from '@/utils/getUserFromToken.server'
 import { del, head, put } from '@vercel/blob'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 
 // upload image
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  await getUserFromToken(request)
+
   const searchParams = request.nextUrl.searchParams
   const filename = searchParams.get('filename') || ''
   const bucket = searchParams.get('bucket') || 'public'
@@ -16,7 +19,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // 存储路径不能以 / 开头
   // 多段路径时，会自动创建文件夹
   // 目前的业务场景，图片上传数量较少，按年份存储
-  const pathname = `${bucket}/${dayjs().format('YYYY')}.${extension}`
+  const pathname = `${bucket}/${dayjs().format('YYYY')}/${dayjs().valueOf()}.${extension}`
   const createdBlob = await put(pathname, request.body, { access: 'public' })
 
   return NextResponse.json(createdBlob)
@@ -24,6 +27,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 // delete image
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  await getUserFromToken(request)
+
   const searchParams = request.nextUrl.searchParams
   const url = searchParams.get('url')
 

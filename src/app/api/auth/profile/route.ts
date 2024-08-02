@@ -1,5 +1,6 @@
 import { getUserFromToken } from '@/utils/getUserFromToken.server'
 import { Prisma, PrismaClient } from '@prisma/client'
+import { del } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 import * as R from 'ramda'
 
@@ -23,11 +24,18 @@ export async function GET(request: NextRequest) {
 // update profile
 export async function PUT(request: NextRequest) {
   const data = (await request.json()) as Pick<Prisma.UserUpdateInput, 'name' | 'avatar'>
-  const user = await getUserFromToken(request)
+  const current = await getUserFromToken(request)
+
+  // 删除旧头像
+  const user = await prisma.user.findUnique({ where: { id: current.id } })
+  if (!!user?.avatar && data.avatar && user?.avatar !== data.avatar) {
+    await del(user.avatar)
+  }
+
   const updatedUser = await prisma.user.update({
-    where: { id: user.id },
+    where: { id: current.id },
     data: R.pick(['name', 'avatar'], data),
   })
 
-  return NextResponse.json(updatedUser)
+  return NextResponse.json(R.omit(['password'], updatedUser))
 }
