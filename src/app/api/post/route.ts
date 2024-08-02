@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
   const records = await prisma.post.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: { title: { contains: keyword }, categoryId, favorites: { some: { favoriteId } } },
+    where: { title: { contains: keyword }, categoryId, favorites: favoriteId ? { some: { favoriteId } } : undefined },
     include: { author: { select: { name: true, avatar: true } } },
   })
 
