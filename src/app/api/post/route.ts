@@ -40,11 +40,18 @@ export async function GET(request: NextRequest) {
   const categoryId = Number(searchParams.get('categoryId') || 0) || undefined
   const favoriteId = Number(searchParams.get('favoriteId') || 0) || undefined
 
-  const total = await prisma.post.count({ where: { title: { contains: keyword }, categoryId } })
+  const where = {
+    title: keyword?.trim() ? { contains: keyword } : undefined,
+    categoryId,
+    favorites: favoriteId ? { some: { favoriteId } } : undefined,
+  }
+
+  const total = await prisma.post.count({ where })
+
   const records = await prisma.post.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: { title: { contains: keyword }, categoryId, favorites: favoriteId ? { some: { favoriteId } } : undefined },
+    where,
     include: { author: { select: { name: true, avatar: true } } },
   })
 
