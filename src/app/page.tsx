@@ -4,8 +4,10 @@
  * @author darcrand
  */
 
-import { redirect } from 'next/navigation'
-
 export default function RootPage() {
-  return redirect('/home')
+  return (
+    <>
+      <p>Root</p>
+    </>
+  )
 }
